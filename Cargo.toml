@@ -5,3 +5,5 @@ authors = ["Luke Chen Shui <chenshuiluke@gmail.com>"]
 
 [dependencies]
 github-rs = {git = "https://github.com/mgattozzi/github-rs"}
+serde_json = "1.0"
+hyper = "0.11"

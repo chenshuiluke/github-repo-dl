@@ -1,7 +1,10 @@
 extern crate github_rs;
+extern crate serde_json;
+extern crate hyper;
+use serde_json::{Value, Error};
 use github_rs::client::Github;
-
-fn getNArgument(n:usize) -> Result<String, &'static str>{
+use std::process::Command;
+fn get_nth_argument(n:usize) -> Result<String, &'static str>{
     for arg in std::env::args().skip(n){
         return Ok(arg);
     }
@@ -10,20 +13,50 @@ fn getNArgument(n:usize) -> Result<String, &'static str>{
 
 fn main() {
     
-    match getNArgument(1){
+    match get_nth_argument(1){
         Ok(tok) => {
             let token:String = tok;
             let client = Github::new(token).unwrap();
-            let me = client.get()
+            let repos = client.get()
                         .user()
+                        .repos()
                         .execute();
-            match me {
+            match repos {
                 Ok((headers, status, json)) => {
-                    println!("{}", headers);
-                    println!("{}", status);
-                    if let Some(json) = json{
-                        println!("{}", json);
+                    match status{
+                        hyper::StatusCode::Unauthorized => {
+                            println!("Invalid token entered!");
+                        }
+                        _ => {
+                            if let Some(json) = json{
+                                if(json.is_array()){
+                                    println!("Is array!");
+                                    let repo_vec = json.as_array();
+                                    println!("Array: {:?}", repo_vec);
+                                    for repo_item in repo_vec{
+                                        for repo_attribute in repo_item{
+                                            if(repo_attribute.is_object()){
+                                                if let Some(html_obj) = repo_attribute.get("html_url"){
+                                                    if let Some(html) = html_obj.as_str(){
+                                                        println!("Downloading {}", html);
+                                                        Command::new("git")
+                                                            .arg("clone")
+                                                            .arg(html)
+                                                            .spawn()
+                                                            .expect("failed to execute command")
+                                                            .wait();
+                                                    }
+                                                    
+                                                } 
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }                            
+                        }
                     }
+
                 },
                 Err(e) => println!("{}", e)
             }            
