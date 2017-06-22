@@ -1,0 +1,7 @@
+[package]
+name = "github-repo-dl"
+version = "0.1.0"
+authors = ["Luke Chen Shui <chenshuiluke@gmail.com>"]
+
+[dependencies]
+github-rs = {git = "https://github.com/mgattozzi/github-rs"}
