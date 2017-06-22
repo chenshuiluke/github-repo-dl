@@ -16,7 +16,7 @@ fn main() {
     match get_nth_argument(1){
         Ok(tok) => {
             let token:String = tok;
-            let client = Github::new(token).unwrap();
+            let client = Github::new(&token).unwrap();
             let repos = client.get()
                         .user()
                         .repos()
@@ -39,9 +39,12 @@ fn main() {
                                                 if let Some(html_obj) = repo_attribute.get("html_url"){
                                                     if let Some(html) = html_obj.as_str(){
                                                         println!("Downloading {}", html);
+                                                        let protocol:String = html.chars().take(8).collect();
+                                                        let url:String = html.chars().skip(8).collect();
+                                                        let clone_url = format!("{}{}@{}",protocol,token,url);
                                                         Command::new("git")
                                                             .arg("clone")
-                                                            .arg(html)
+                                                            .arg(clone_url)
                                                             .spawn()
                                                             .expect("failed to execute command")
                                                             .wait();
