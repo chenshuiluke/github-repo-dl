@@ -56,7 +56,6 @@ fn process_repo_json(repo_json:Option<Value>, config:Config){
                 for repository in repository_list{
                     //println!("Repository: {:?}", repository);
                     if repository.is_object(){
-
                         let repository_html_url = repository.get("html_url").unwrap().as_str().unwrap();
                         let repository_name = repository.get("name").unwrap().as_str().unwrap();
                         println!("Downloading {}", repository_html_url);
@@ -73,7 +72,6 @@ fn process_repo_json(repo_json:Option<Value>, config:Config){
                             .wait();
                         println!("{}", "-".repeat(get_width_of_terminal()));
                     }
-
                 }
             }
         }
