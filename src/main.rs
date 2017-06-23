@@ -11,6 +11,52 @@ fn get_nth_argument(n:usize) -> Result<String, &'static str>{
     Err("No token was provided")
 }
 
+fn process_repos(repos:Result<(hyper::Headers, hyper::StatusCode, std::option::Option<Value>), github_rs::errors::Error>,
+    token:String){
+    match repos {
+        Ok((headers, status, json)) => {
+            match status{
+                hyper::StatusCode::Unauthorized => {
+                    println!("Invalid token entered!");
+                }
+                _ => {
+                    if let Some(json) = json{
+                        if(json.is_array()){
+                            println!("Is array!");
+                            let repo_vec = json.as_array();
+                            println!("Array: {:?}", repo_vec);
+                            for repo_item in repo_vec{
+                                for repo_attribute in repo_item{
+                                    if(repo_attribute.is_object()){
+                                        if let Some(html_obj) = repo_attribute.get("html_url"){
+                                            if let Some(html) = html_obj.as_str(){
+                                                println!("Downloading {}", html);
+                                                let protocol:String = html.chars().take(8).collect();
+                                                let url:String = html.chars().skip(8).collect();
+                                                let clone_url = format!("{}{}@{}",protocol,token,url);
+                                                Command::new("git")
+                                                    .arg("clone")
+                                                    .arg(clone_url)
+                                                    .spawn()
+                                                    .expect("failed to execute command")
+                                                    .wait();
+                                            }
+                                            
+                                        } 
+                                    }
+                                }
+
+                            }
+                        }
+                    }                            
+                }
+            }
+
+        },
+        Err(e) => println!("{}", e)
+    }  
+}
+
 fn main() {
     
     match get_nth_argument(1){
@@ -21,48 +67,7 @@ fn main() {
                         .user()
                         .repos()
                         .execute();
-            match repos {
-                Ok((headers, status, json)) => {
-                    match status{
-                        hyper::StatusCode::Unauthorized => {
-                            println!("Invalid token entered!");
-                        }
-                        _ => {
-                            if let Some(json) = json{
-                                if(json.is_array()){
-                                    println!("Is array!");
-                                    let repo_vec = json.as_array();
-                                    println!("Array: {:?}", repo_vec);
-                                    for repo_item in repo_vec{
-                                        for repo_attribute in repo_item{
-                                            if(repo_attribute.is_object()){
-                                                if let Some(html_obj) = repo_attribute.get("html_url"){
-                                                    if let Some(html) = html_obj.as_str(){
-                                                        println!("Downloading {}", html);
-                                                        let protocol:String = html.chars().take(8).collect();
-                                                        let url:String = html.chars().skip(8).collect();
-                                                        let clone_url = format!("{}{}@{}",protocol,token,url);
-                                                        Command::new("git")
-                                                            .arg("clone")
-                                                            .arg(clone_url)
-                                                            .spawn()
-                                                            .expect("failed to execute command")
-                                                            .wait();
-                                                    }
-                                                    
-                                                } 
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }                            
-                        }
-                    }
-
-                },
-                Err(e) => println!("{}", e)
-            }            
+          process_repos(repos,token);
         }
         Err(e) => println!("{}", e)
     }
