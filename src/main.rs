@@ -71,7 +71,6 @@ fn process_repo_json(repo_json:Option<Value>, config:Config){
                             .spawn()
                             .expect("failed to execute command")
                             .wait();
-                        println!("{:?}", result);
                         println!("{}", "-".repeat(get_width_of_terminal()));
                     }
 
