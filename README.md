@@ -1,3 +1,5 @@
+**You need to have a GitHub personal access token from here: https://github.com/settings/tokens**
+
 # Compilation
 
 1. Install cargo and rust.
