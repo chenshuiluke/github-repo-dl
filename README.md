@@ -15,7 +15,7 @@
 
 ## Token and Download Directory
 
-    github-repo-dl <token>
+    github-repo-dl <token> <directory>
 
 # Useful Commands
 
