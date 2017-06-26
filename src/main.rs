@@ -78,7 +78,7 @@ fn process_repo_json(repo_json:Option<Value>, config:Config){
     }      
 }
 
-fn process_repos(repos:Result<(hyper::Headers, hyper::StatusCode, std::option::Option<Value>), github_rs::errors::Error>,
+fn validate(repos:Result<(hyper::Headers, hyper::StatusCode, std::option::Option<Value>), github_rs::errors::Error>,
     config:Config){
     match repos {
         Ok((_, status, json)) => {
@@ -113,5 +113,5 @@ fn main() {
                 .user()
                 .repos()
                 .execute();
-    process_repos(repos,config);
+    validate(repos,config);
 }
