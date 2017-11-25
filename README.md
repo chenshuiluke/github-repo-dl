@@ -21,4 +21,4 @@
 
 ## Removing all files except source files
 
-    shopt -s extglob ; sudo rm -r !(Cargo.lock|Cargo.toml|src|target|README.md)
+    shopt -s extglob ; rm -rf !(Cargo.lock|Cargo.toml|src|target|README.md)
