@@ -1,4 +1,4 @@
-**You need to have a GitHub personal access token from here: https://github.com/settings/tokens**
+**You need to have a GitHub personal access token from here: https://github.com/settings/tokens with either full `repo` access (access to both private and public repos) or `public_repo` access (access to only public repos).**
 
 # Compilation
 
